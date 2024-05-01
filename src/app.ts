@@ -1,7 +1,7 @@
 import { IMesero } from "./interfaces/IMesero";
 import { IPedido } from "./interfaces/IPedido";
 import { IPlato } from "./interfaces/IPlato";
-
+import { IResponse } from "./interfaces/IResponse";
 //-------OBJETOS-------
 const plato: IPlato[] = [
     { id:1, nombre_plato:"Salchipapa"},
@@ -35,7 +35,7 @@ const pedidos: IPedido[] = [
     }
 ]
 
-//----FUNCIONES ELIMINAR ELEMENTO POR ID----
+//----FUNCION ELIMINAR ELEMENTO POR ID----
 function eliminarElementoPorID(arreglo: any[], id: number): void {
     const index = arreglo.findIndex((element) => element.id === id);
     if (index !== -1) {
@@ -43,47 +43,47 @@ function eliminarElementoPorID(arreglo: any[], id: number): void {
     }
 }
 
+//----EJEMPLO----
+eliminarElementoPorID2(pedidos, 2, (deletedElement) => {
+    console.log('Deleted Element:', deletedElement);
+});
+
 //----CALLBACK----
-function eliminarElementoPorID(arreglo: any[], id: number, callback: (element: any) => void): void {
+function eliminarElementoPorID2(arreglo: any[], id: number, callback: (element: any) => void): void {
     const index = arreglo.findIndex((element) => element.id === id);
     if (index !== -1) {
         const deletedElement = arreglo.splice(index, 1)[0];
         callback(deletedElement);
     }
 }
-
-eliminarElementoPorID(pedidos, 2, (deletedElement) => {
-    console.log("Elemento eliminado:", deletedElement);
+//----EJEMPLO CALLBACK----
+eliminarElementoPorID2(pedidos, 2, (deletedElement) => {
+    console.log('Deleted Element:', deletedElement);
 });
+// ---SERVICIO REST---
+interface RestResponse {
+    data: (IMesero | IPedido | IPlato)[];
+  }
 
-//----FETCH DATA FROM REST API----
-fetch('https://api.example.com/data')
-    .then(response => response.json())
-    .then((data: IResponse) => {
-        //----VALIDATE RESPONSE AGAINST INTERFACE----
-        if (validateResponse(data)) {
-            //----PROCESS DATA----
-            processData(data);
-        } else {
-            console.log('Invalid response');
-        }
-    })
-    .catch(error => {
-        console.log('Error:', error);
-    });
-
-//----INTERFACE FOR RESPONSE----
-interface IResponse {
-    //Define the properties of the response here
-}
-
-//----VALIDATE RESPONSE AGAINST INTERFACE----
-function validateResponse(response: any): response is IResponse {
-    // Implement the validation logic here
-    return true; // Return true if the response is valid, false otherwise
-}
-
-//----PROCESS DATA----
-function processData(data: IResponse) {
-    // Implement the logic to process the data here
-}
+  async function fetchData(url: string): Promise<RestResponse | null> {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return data as RestResponse;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return null;
+    }
+  }
+  const apiUrl = "https://jsonplaceholder.typicode.com/posts";
+  
+  fetchData(apiUrl).then(response => {
+    if (response) {
+      console.log("Data from REST service:", response);
+    } else {
+      console.log("Failed to fetch data from REST service.");
+    }
+  });
