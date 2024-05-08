@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/@types/node/package.json",
   "name": "p2",
   "version": "1.0.0",
   "description": "",
@@ -14,5 +15,8 @@
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.13.0"
   }
 }
